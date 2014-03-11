@@ -32,7 +32,19 @@
 					<element name="heartBeatSeconds" type="unsignedShort" minOccurs="0" maxOccurs="1" />
 					<element name="useJSON" type="boolean" minOccurs="0" maxOccurs="1" />
 					<element name="compression" type="string" minOccurs="0" maxOccurs="1" />
+					<element name="layout" type="nlog:Layout" minOccurs="0" maxOccurs="1" />
+					<element name="field" minOccurs="0" maxOccurs="unbounded">
+						<complexType>
+							<attribute name="name" type="string" use="required"/>
+							<attribute name="layout" type="nlog:Layout" use="required"/>
+						</complexType>
+					</element>
 				</choice>
+				 <attribute name="layout" type="nlog:SimpleLayoutAttribute">
+					 <annotation>
+						 <documentation>Instance of  that is used to format log messages.</documentation>
+					 </annotation>
+				 </attribute>
 				 <attribute name="name" type="string">
 					 <annotation>
 						<documentation>Name of the target.</documentation>
@@ -55,8 +67,9 @@
 				</attribute>
 				 <attribute name="exchange" type="string" default="app-logging">
 					 <annotation>
-						<documentation>The exchange to bind the logger output to.</documentation>
-					</annotation>
+						 <documentation>The exchange to bind the logger output to.</documentation>
+					 </annotation>
+				 </attribute>
 				 <attribute name="exchangetype" type="string" default="topic">
 					 <annotation>
 						<documentation>The exchange type to bind to logger output to. This must be a supported topic type by RabbitMQ.</documentation>
@@ -94,7 +107,7 @@
 				</attribute>
 				 <attribute name="useJSON" type="boolean" default="false">
 					 <annotation>
-						 <documentation>Whether to publish the message as a JSON structure (recommended!)</documentation>
+						 <documentation>Whether to publish the message as a JSON structure (recommended!). If true then the defined layout will not be used.</documentation>
 					 </annotation>
 				 </attribute>
 				<attribute name="compression" type="string" default="none">
