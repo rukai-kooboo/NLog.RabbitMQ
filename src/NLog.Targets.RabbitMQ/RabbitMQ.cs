@@ -10,6 +10,7 @@ using RabbitMQ.Client.Framing.v0_9_1;
 using MQExchangeType = RabbitMQ.Client.ExchangeType;
 using NLog.Layouts;
 using System.IO.Compression;
+using NLog.Config;
 
 namespace NLog.Targets
 {
@@ -31,6 +32,7 @@ namespace NLog.Targets
 		{
 			Layout = "${message}";
 			Compression = CompressionTypes.None;
+			Fields = new List<Field>();
 		}
 
 		#region Properties
@@ -140,25 +142,25 @@ namespace NLog.Targets
 			get { return _Exchange; }
 			set { if (value != null) _Exchange = value; }
 		}
-        private string _ExchangeType = MQExchangeType.Topic;
+		private string _ExchangeType = MQExchangeType.Topic;
 
-        /// <summary>
-        ///   Gets or sets the exchange type to bind the logger output to.
-        /// </summary>
-        /// <remarks>
-        ///   Default is 'topic'
-        /// </remarks>
-        public string ExchangeType
-        {
-            get { return _ExchangeType; }
-            set
-            {
-                if (String.IsNullOrEmpty(value))
-                    return;
+		/// <summary>
+		///   Gets or sets the exchange type to bind the logger output to.
+		/// </summary>
+		/// <remarks>
+		///   Default is 'topic'
+		/// </remarks>
+		public string ExchangeType
+		{
+			get { return _ExchangeType; }
+			set
+			{
+				if (String.IsNullOrEmpty(value))
+					return;
 
-                _ExchangeType = value;
-            }
-        }
+				_ExchangeType = value;
+			}
+		}
 
 		private bool _Durable = true;
 
@@ -263,7 +265,10 @@ namespace NLog.Targets
 		/// Available compression methods: None, GZip
 		/// </summary>
 		public CompressionTypes Compression { get; set; }
-		
+
+		[ArrayParameter(typeof(Field), "field")]
+		public IList<Field> Fields { get; private set; }
+
 		#endregion
 
 		protected override void Write(AsyncLogEventInfo logEvent)
@@ -342,7 +347,7 @@ namespace NLog.Targets
 
 		private byte[] GetMessage(AsyncLogEventInfo info)
 		{
-			return _Encoding.GetBytes(MessageFormatter.GetMessageInner(_UseJSON, Layout, info.LogEvent));
+			return _Encoding.GetBytes(MessageFormatter.GetMessageInner(_UseJSON, Layout, info.LogEvent, this.Fields));
 		}
 
 		private IBasicProperties GetBasicProperties(AsyncLogEventInfo loggingEvent)
@@ -480,15 +485,15 @@ namespace NLog.Targets
 		
 		private byte[] CompressMessage(byte[] messageBytes)
 		{
-		    switch (Compression)
-		    {
-		        case CompressionTypes.None:
-		            return messageBytes;
-		        case CompressionTypes.GZip:
-		            return CompressMessageGZip(messageBytes);
-		        default:
-		            throw new NLogConfigurationException(string.Format("Compression type '{0}' not supported.", Compression));
-		    }
+			switch (Compression)
+			{
+				case CompressionTypes.None:
+					return messageBytes;
+				case CompressionTypes.GZip:
+					return CompressMessageGZip(messageBytes);
+				default:
+					throw new NLogConfigurationException(string.Format("Compression type '{0}' not supported.", Compression));
+			}
 		}
 		
 		/// <summary>
@@ -498,13 +503,13 @@ namespace NLog.Targets
 		/// <returns></returns>
 		private byte[] CompressMessageGZip(byte[] messageBytes)
 		{
-		    var gzipCompressedMemStream = new MemoryStream();
-		    using (var gzipStream = new GZipStream(gzipCompressedMemStream, CompressionMode.Compress))
-		    {
-		        gzipStream.Write(messageBytes, 0, messageBytes.Length);
-		    }
+			var gzipCompressedMemStream = new MemoryStream();
+			using (var gzipStream = new GZipStream(gzipCompressedMemStream, CompressionMode.Compress))
+			{
+				gzipStream.Write(messageBytes, 0, messageBytes.Length);
+			}
 		
-		    return gzipCompressedMemStream.ToArray();
+			return gzipCompressedMemStream.ToArray();
 		}		
 
 	}

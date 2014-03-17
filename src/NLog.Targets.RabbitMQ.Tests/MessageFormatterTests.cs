@@ -14,6 +14,7 @@ namespace NLog.RabbitMQ.Tests
 	{
 		Layout l;
 		LogEventInfo evt;
+		IList<Field> fields = null;
 
 		[SetUp]
 		public void given()
@@ -48,7 +49,7 @@ namespace NLog.RabbitMQ.Tests
 		[Test]
 		public void contains_iso8601_timestamp()
 		{
-			var res = MessageFormatter.GetMessageInner(true, l, evt);
+			var res = MessageFormatter.GetMessageInner(true, l, evt, fields);
 			Assert.That(res, Is.StringContaining(
 				evt.TimeStamp.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture)));
 		}
@@ -62,7 +63,7 @@ namespace NLog.RabbitMQ.Tests
 
 		LogLine LogLine()
 		{
-			var res = MessageFormatter.GetMessageInner(true, l, evt);
+			var res = MessageFormatter.GetMessageInner(true, l, evt, fields);
 			Console.WriteLine(res);
 			var json = JsonConvert.DeserializeObject<LogLine>(res);
 			return json;
@@ -71,7 +72,7 @@ namespace NLog.RabbitMQ.Tests
 		[Test]
 		public void contains_exception()
 		{
-			var res = MessageFormatter.GetMessageInner(true, l, evt);
+			var res = MessageFormatter.GetMessageInner(true, l, evt, fields);
 			Assert.That(res, Is.StringContaining(@"""exception"":"));
 		}
 
@@ -126,5 +127,38 @@ namespace NLog.RabbitMQ.Tests
 			var json = LogLine();
 			Assert.False(json.Fields.ContainsKey("fields"));
 		}
+
+		[Test]
+		public void config_defined_fields_is_present_in_json_output()
+		{
+			fields = new List<Field>() { new Field("fieldname", new SimpleLayout("hard coded value")) };
+
+			var json = LogLine();
+			Assert.True(json.Fields.ContainsKey("fieldname"));
+		}
+
+		[Test]
+		public void config_defined_fields_is_layout_expanded()
+		{
+			fields = new List<Field>() { new Field("fieldname", new SimpleLayout("${message}")) };
+
+			var json = LogLine();
+
+			Assert.AreEqual(json.Message, json.Fields["fieldname"]);
+		}
+
+		[Test]
+		public void config_defined_fields_is_overridden_with_runtime_properties()
+		{
+			string expected = "runtime value";
+
+			fields = new List<Field>() { new Field("fieldname", new SimpleLayout("default value")) };
+			evt.Properties.Add("fieldname", expected);
+
+			var json = LogLine();
+
+			Assert.AreEqual(expected, json.Fields["fieldname"]);
+		}
+
 	}
 }
