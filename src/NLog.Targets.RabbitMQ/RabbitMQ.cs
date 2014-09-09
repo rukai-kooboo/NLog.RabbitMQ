@@ -261,7 +261,7 @@ namespace NLog.Targets
 		}
 
         DeliveryMode _DeliveryMode = DeliveryMode.NonPersistent;
-
+        
         /// <summary>
         /// The delivery more, 1 for non-persistent, 2 for persistent
         /// </summary>
