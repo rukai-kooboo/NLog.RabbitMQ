@@ -262,14 +262,14 @@ namespace NLog.Targets
 
         DeliveryMode _DeliveryMode = DeliveryMode.NonPersistent;
 
-	    /// <summary>
-	    /// The delivery more, 1 for non-persistent, 2 for persistent
-	    /// </summary>
-	    public DeliveryMode DeliveryMode
-	    {
+        /// <summary>
+        /// The delivery more, 1 for non-persistent, 2 for persistent
+        /// </summary>
+        public DeliveryMode DeliveryMode
+        {
             get { return _DeliveryMode; }
             set { _DeliveryMode = value; }
-	    }
+        }
 
         int _Timeout = 30;
 
