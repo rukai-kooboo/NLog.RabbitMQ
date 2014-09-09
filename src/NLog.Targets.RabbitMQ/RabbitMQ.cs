@@ -384,7 +384,7 @@ namespace NLog.Targets
 					AppId = AppId ?? @event.LoggerName,
 					Timestamp = new AmqpTimestamp(MessageFormatter.GetEpochTimeStamp(@event)),
 					UserId = UserName, // support Validated User-ID (see http://www.rabbitmq.com/extensions.html)
-                    DeliveryMode = (byte) DeliveryMode
+					DeliveryMode = (byte) DeliveryMode
 				};
 		}
 
