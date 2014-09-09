@@ -260,6 +260,29 @@ namespace NLog.Targets
 			set { _SslCertPassphrase = value; }
 		}
 
+		DeliveryMode _DeliveryMode = DeliveryMode.NonPersistent;
+
+		/// <summary>
+		/// The delivery more, 1 for non-persistent, 2 for persistent
+		/// </summary>
+		public DeliveryMode DeliveryMode
+		{
+			get { return _DeliveryMode; }
+			set { _DeliveryMode = value; }
+		}
+        
+		int _Timeout = 30;
+
+		/// <summary>
+		/// The amount of milliseconds to wait when starting a connection
+		/// before moving on to next task
+		/// </summary>
+		public int Timeout
+		{
+			get { return _Timeout; }
+			set { _Timeout = value; }
+		}
+
 		/// <summary>
 		/// Gets or sets compression type. 
 		/// Available compression methods: None, GZip
@@ -360,7 +383,8 @@ namespace NLog.Targets
 					ContentType = _UseJSON ? "application/json" : "text/plain",
 					AppId = AppId ?? @event.LoggerName,
 					Timestamp = new AmqpTimestamp(MessageFormatter.GetEpochTimeStamp(@event)),
-					UserId = UserName // support Validated User-ID (see http://www.rabbitmq.com/extensions.html)
+					UserId = UserName, // support Validated User-ID (see http://www.rabbitmq.com/extensions.html)
+					DeliveryMode = (byte) DeliveryMode
 				};
 		}
 
@@ -416,7 +440,7 @@ namespace NLog.Targets
 					}
 				});
 
-			if (!t.Wait(TimeSpan.FromMilliseconds(30)))
+			if (!t.Wait(TimeSpan.FromMilliseconds(Timeout)))
 				InternalLogger.Warn("starting connection-task timed out, continuing");
 		}
 
