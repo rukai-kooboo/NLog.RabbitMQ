@@ -260,28 +260,28 @@ namespace NLog.Targets
 			set { _SslCertPassphrase = value; }
 		}
 
-        	byte _DeliveryMode = 2;
+        DeliveryMode _DeliveryMode = DeliveryMode.NonPersistent;
 
-	        /// <summary>
-	        /// The delivery more, 1 for non-persistent, 2 for persistent
-	        /// </summary>
-	        public byte DeliveryMode
-	        {
-	            get { return _DeliveryMode; }
-	            set { _DeliveryMode = value; }
-	        }
-	
-	        int _Timeout = 30;
-	
-	        /// <summary>
-	        /// The amount of milliseconds to wait when starting a connection
-	        /// before moving on to next task
-	        /// </summary>
-	        public int Timeout
-	        {
-	            get { return _Timeout; }
-	            set { _Timeout = value; }
-	        }
+	    /// <summary>
+	    /// The delivery more, 1 for non-persistent, 2 for persistent
+	    /// </summary>
+	    public DeliveryMode DeliveryMode
+	    {
+            get { return _DeliveryMode; }
+            set { _DeliveryMode = value; }
+	    }
+
+        int _Timeout = 30;
+
+        /// <summary>
+        /// The amount of milliseconds to wait when starting a connection
+        /// before moving on to next task
+        /// </summary>
+        public int Timeout
+        {
+            get { return _Timeout; }
+            set { _Timeout = value; }
+        }
 
 		/// <summary>
 		/// Gets or sets compression type. 
@@ -384,7 +384,7 @@ namespace NLog.Targets
 					AppId = AppId ?? @event.LoggerName,
 					Timestamp = new AmqpTimestamp(MessageFormatter.GetEpochTimeStamp(@event)),
 					UserId = UserName, // support Validated User-ID (see http://www.rabbitmq.com/extensions.html)
-                    			DeliveryMode = DeliveryMode
+                    DeliveryMode = (byte) DeliveryMode
 				};
 		}
 
