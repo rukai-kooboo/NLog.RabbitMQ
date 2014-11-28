@@ -234,18 +234,17 @@ Description: Will create an adjacent file 'log.txt' and also output all log data
 		{
 			while (!_stopping)
 			{
-				object tmp;
+				BasicDeliverEventArgs tmp;
+
 				if (!consumer.Queue.Dequeue(200, out tmp))
 					continue;
 
-				var msg = (BasicDeliverEventArgs) tmp;
-
-				if (opts.BasicProps)
-					DebugUtil.DumpProperties(msg.BasicProperties, Console.Out, 1);
+			    if (opts.BasicProps)
+					DebugUtil.DumpProperties(tmp.BasicProperties, Console.Out, 1);
 
 				string output,
 					   formatted,
-					   input = msg.Body.AsUtf8String();
+					   input = tmp.Body.AsUtf8String();
 
 				if (opts.PrettyJSON)
 				{
