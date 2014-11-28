@@ -2,7 +2,7 @@
  
 The RabbitMQ target writes asynchronously to a RabbitMQ instance. Either use this repo, ur get the nuget:
 
-`Install-Package NLog.RabbitMQ`
+`Install-Package NLog.Targets.RabbitMQ`
 
 You will find the listener tool in the nuget `tools` folder.
 
