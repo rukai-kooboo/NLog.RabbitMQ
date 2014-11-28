@@ -1,1 +1,1 @@
-NuGet.exe pack ..\src\NLog.Targets.RabbitMQ\NLog.RabbitMQ.nuspec
+NuGet.exe pack ..\src\NLog.Targets.RabbitMQ\NLog.Targets.RabbitMQ.nuspec
