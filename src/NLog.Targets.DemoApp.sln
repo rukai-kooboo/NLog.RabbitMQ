@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F52C00A3-4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog.Targets.RabbitMQ.Tests", "NLog.Targets.RabbitMQ.Tests\NLog.Targets.RabbitMQ.Tests.csproj", "{5D5C5B44-8376-4DA5-8361-F6B5D3CD6CEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.csproj", "{6BCFFC5C-8A41-4616-A88D-E81F9BC92571}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nlog-rmq-listener", "nlog-rmq-listener\nlog-rmq-listener.csproj", "{47170614-99C4-47CE-B7FD-1BBCC1BE1839}"
 EndProject
 Global
@@ -29,6 +31,10 @@ Global
 		{26B036BC-6F6C-42F2-995E-5016D0D0FA8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26B036BC-6F6C-42F2-995E-5016D0D0FA8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26B036BC-6F6C-42F2-995E-5016D0D0FA8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BCFFC5C-8A41-4616-A88D-E81F9BC92571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BCFFC5C-8A41-4616-A88D-E81F9BC92571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BCFFC5C-8A41-4616-A88D-E81F9BC92571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BCFFC5C-8A41-4616-A88D-E81F9BC92571}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5D5C5B44-8376-4DA5-8361-F6B5D3CD6CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D5C5B44-8376-4DA5-8361-F6B5D3CD6CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D5C5B44-8376-4DA5-8361-F6B5D3CD6CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU

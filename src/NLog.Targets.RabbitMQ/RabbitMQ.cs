@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog.Common;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Framing.v0_9_1;
+using RabbitMQ.Client.Framing;
 using MQExchangeType = RabbitMQ.Client.ExchangeType;
 using NLog.Layouts;
 using System.IO.Compression;
