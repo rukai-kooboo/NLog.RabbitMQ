@@ -5,5 +5,7 @@ build/
 _ReSharper*
 *.resharper
 *.suo
-SharedAssemblyInfo.cs
+AssemblyVersionInfo.cs
+paket.exe
 packages/
+
