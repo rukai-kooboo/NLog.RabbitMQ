@@ -27,20 +27,23 @@ lessons building this taught me and also has support for many more targets*
 		<!-- when http://nlog.codeplex.com/workitem/6491 is fixed, then xsi:type="haf:RabbitMQ" instead;
 			 these are the defaults (except 'topic', 'appid', and 'useJSON'): 
 		-->
-		<target name="RabbitMQTarget" 
-				xsi:type="RabbitMQ" 
+		<target name="RabbitMQTarget"
+				xsi:type="RabbitMQ"
 				username="guest" 
 				password="guest" 
 				hostname="localhost" 
-				exchange="app-logging" 
-				port="5672" 
-				topic="${machinename}.${logger}.{0}"
-				vhost="/" 
-				appid="DemoApp" 
-				maxBuffer="10240" 
+				exchange="app-logging"
+				port="5672"
+				topic="DemoApp.Logging.{0}"
+				vhost="/"
+				durable="true"
+				appid="NLog.RabbitMQ.DemoApp"
+				maxBuffer="10240"
 				heartBeatSeconds="3"
-				deliveryMode="Persistent"
-				useJSON="true" />
+				useJSON="true"
+				layout="${message}"
+				compression="none"
+				/>
 	</targets>
 
 	<rules>
@@ -115,23 +118,37 @@ Make sure you are using the flag `useJSON='true'` in your configuration, then yo
 
 ```
 input {
-  rabbitmq {
+  amqp {
     durable => true
     exchange => "app-logging"
     exclusive => false
+    format => "json_event"
     host => "localhost"
+    key => "#"
+    name => ""
     passive => false
     password => "guest"
+    port => 5672
     prefetch_count => 10
     ssl => false
+    # tags => ... # array (optional)
     type => "nlog"
     user => "guest"
+    verify_ssl => false
+    vhost => "/"
   }
 }
 
 output {
+  # Emit events to stdout for easy debugging of what is going through
+  # logstash.
+  stdout { }
+
   # This will use elasticsearch to store your logs.
-  elasticsearch { host => localhost }
+  # The 'embedded' option will cause logstash to run the elasticsearch
+  # server in the same process, so you don't have to worry about
+  # how to download, configure, or run elasticsearch!
+  elasticsearch { embedded => true }
 }
 ```
 
