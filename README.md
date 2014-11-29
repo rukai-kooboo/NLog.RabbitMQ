@@ -2,7 +2,7 @@
  
 The RabbitMQ target writes asynchronously to a RabbitMQ instance. Either use this repo, ur get the nuget:
 
-`Install-Package NLog.Targets.RabbitMQ`
+`Install-Package NLog.RabbitMQ`
 
 You will find the listener tool in the nuget `tools` folder.
 
@@ -15,40 +15,40 @@ lessons building this taught me and also has support for many more targets*
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
-	  xmlns:haf="https://github.com/haf/NLog.RabbitMQ/raw/master/src/schemas/NLog.RabbitMQ.xsd"
+    xmlns:haf="https://github.com/haf/NLog.RabbitMQ/raw/master/src/schemas/NLog.RabbitMQ.xsd"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  internalLogToConsole="true">
+    internalLogToConsole="true">
 
-	<extensions>
-		<add assembly="NLog.Targets.RabbitMQ" />
-	</extensions>
+  <extensions>
+    <add assembly="NLog.Targets.RabbitMQ" />
+  </extensions>
 
-	<targets async="true">
-		<!-- when http://nlog.codeplex.com/workitem/6491 is fixed, then xsi:type="haf:RabbitMQ" instead;
-			 these are the defaults (except 'topic', 'appid', and 'useJSON'): 
-		-->
-		<target name="RabbitMQTarget"
-				xsi:type="RabbitMQ"
-				username="guest" 
-				password="guest" 
-				hostname="localhost" 
-				exchange="app-logging"
-				port="5672"
-				topic="DemoApp.Logging.{0}"
-				vhost="/"
-				durable="true"
-				appid="NLog.RabbitMQ.DemoApp"
-				maxBuffer="10240"
-				heartBeatSeconds="3"
-				useJSON="true"
-				layout="${message}"
-				compression="none"
-				/>
-	</targets>
+  <targets async="true">
+    <!-- when http://nlog.codeplex.com/workitem/6491 is fixed, then xsi:type="haf:RabbitMQ" instead;
+       these are the defaults (except 'topic', 'appid', and 'useJSON'): 
+    -->
+    <target name="RabbitMQTarget"
+        xsi:type="RabbitMQ"
+        username="guest" 
+        password="guest" 
+        hostname="localhost" 
+        exchange="app-logging"
+        port="5672"
+        topic="DemoApp.Logging.{0}"
+        vhost="/"
+        durable="true"
+        appid="NLog.RabbitMQ.DemoApp"
+        maxBuffer="10240"
+        heartBeatSeconds="3"
+        useJSON="true"
+        layout="${message}"
+        compression="none"
+        />
+  </targets>
 
-	<rules>
-		<logger name="*" minlevel="Trace" writeTo="RabbitMQTarget"/>
-	</rules>
+  <rules>
+    <logger name="*" minlevel="Trace" writeTo="RabbitMQTarget"/>
+  </rules>
 
 </nlog>
 ```
@@ -58,28 +58,28 @@ Minimum target recommended:
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
-	  xmlns:haf="https://github.com/haf/NLog.RabbitMQ/raw/master/src/schemas/NLog.RabbitMQ.xsd"
+    xmlns:haf="https://github.com/haf/NLog.RabbitMQ/raw/master/src/schemas/NLog.RabbitMQ.xsd"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  internalLogToConsole="true">
+    internalLogToConsole="true">
 
-	<extensions>
-		<add assembly="NLog.Targets.RabbitMQ" />
-	</extensions>
+  <extensions>
+    <add assembly="NLog.Targets.RabbitMQ" />
+  </extensions>
 
-	<targets async="true">
-		<!-- when http://nlog.codeplex.com/workitem/6491 is fixed, then xsi:type="haf:RabbitMQ" instead;
-			 these are the defaults (except 'topic' and 'appid'): 
-		-->
-		<target name="RabbitMQTarget"
-				xsi:type="RabbitMQ"
-				useJSON="true"
-				layout="${message}"
-				/>
-	</targets>
+  <targets async="true">
+    <!-- when http://nlog.codeplex.com/workitem/6491 is fixed, then xsi:type="haf:RabbitMQ" instead;
+       these are the defaults (except 'topic' and 'appid'): 
+    -->
+    <target name="RabbitMQTarget"
+        xsi:type="RabbitMQ"
+        useJSON="true"
+        layout="${message}"
+        />
+  </targets>
 
-	<rules>
-		<logger name="*" minlevel="Trace" writeTo="RabbitMQTarget"/>
-	</rules>
+  <rules>
+    <logger name="*" minlevel="Trace" writeTo="RabbitMQTarget"/>
+  </rules>
 
 </nlog>
 ```
@@ -103,7 +103,7 @@ Because NLog doesn't expose a single method for shutting everything down (but lo
 var allTargets = LogManager.Configuration.AllTargets;
 
 foreach (var target in allTargets)
-	target.Dispose();
+  target.Dispose();
 ```
 
 For an example of how to do this with WPF see the demo.
@@ -160,13 +160,13 @@ You can now log from e.g. your web site like this:
 ```
 var request = ((HttpApplication)sender).Request; // or HttpContext.Current.Request;
 _logger.Log(LogLevel.Debug,
-		string.Format("{0} {1}", request.HttpMethod, request.Path),
-		tags: new[] {"requests"},
-		fields: new Dictionary<string, object>
-			{
-				{"REMOTE_ADDR", request.ServerVariables["REMOTE_ADDR"] ?? ""},
-				{"HTTP_USER_AGENT", request.ServerVariables["HTTP_USER_AGENT"] ?? ""}
-			});
+    string.Format("{0} {1}", request.HttpMethod, request.Path),
+    tags: new[] {"requests"},
+    fields: new Dictionary<string, object>
+      {
+        {"REMOTE_ADDR", request.ServerVariables["REMOTE_ADDR"] ?? ""},
+        {"HTTP_USER_AGENT", request.ServerVariables["HTTP_USER_AGENT"] ?? ""}
+      });
 ```
 
 Added overloads to `NLog.Logger`: 
