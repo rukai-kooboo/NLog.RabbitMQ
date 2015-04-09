@@ -465,10 +465,11 @@ namespace NLog.Targets
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private void ShutdownAmqp(IConnection connection, ShutdownEventArgs reason)
+		private void ShutdownAmqp(object sender, ShutdownEventArgs reason)
 		{
 			// I can't make this NOT hang when RMQ goes down
 			// and then a log message is sent...
+			var connection = sender as IConnection;
 
 			try
 			{
