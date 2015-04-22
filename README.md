@@ -6,9 +6,9 @@ The RabbitMQ target writes asynchronously to a RabbitMQ instance. Either use thi
 
 You will find the listener tool in the nuget `tools` folder.
 
-*For more future-proof logging I recommend
+**For more future-proof logging I recommend
 [Logary](https://github.com/logary/logary) which encapsulates many of the
-lessons building this taught me and also has support for many more targets*
+lessons building this taught me and also has support for many more targets**
 
 ##Configuration:
 
