@@ -497,8 +497,12 @@ namespace NLog.Targets
 			}
 		}
 
-		// Dispose calls CloseTarget!
+        private void ShutdownAmqp(object sender, ShutdownEventArgs e)
+        {
+            ShutdownAmqp((IConnection)sender, e);
+        }
 
+		// Dispose calls CloseTarget!
 		protected override void CloseTarget()
 		{
 			ShutdownAmqp(_Connection,
