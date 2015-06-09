@@ -292,6 +292,12 @@ namespace NLog.Targets
 		[ArrayParameter(typeof(Field), "field")]
 		public IList<Field> Fields { get; private set; }
 
+		/// <summary>
+		/// Using for JSON formating (when UseJSON set true). 
+		/// If set as true - <see cref="NLog.Targets.LogLine.Message"/> field rendered by Layout prorerty instead getting <see cref="NLog.LogEventInfo.FormattedMessage"/>
+		/// </summary>
+		public bool UseLayoutAsMessage { get; set; }
+
 		#endregion
 
 		protected override void Write(AsyncLogEventInfo logEvent)
@@ -370,7 +376,7 @@ namespace NLog.Targets
 
 		private byte[] GetMessage(AsyncLogEventInfo info)
 		{
-			return _Encoding.GetBytes(MessageFormatter.GetMessageInner(_UseJSON, Layout, info.LogEvent, this.Fields));
+			return _Encoding.GetBytes(MessageFormatter.GetMessageInner(_UseJSON, this.UseLayoutAsMessage, Layout, info.LogEvent, this.Fields));
 		}
 
 		private IBasicProperties GetBasicProperties(AsyncLogEventInfo loggingEvent)
