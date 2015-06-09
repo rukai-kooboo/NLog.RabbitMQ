@@ -292,11 +292,11 @@ namespace NLog.Targets
 		[ArrayParameter(typeof(Field), "field")]
 		public IList<Field> Fields { get; private set; }
 
-        /// <summary>
-        /// Using for JSON formating (when UseJSON set true). 
-        /// If set as true - <see cref="NLog.Targets.LogLine.Message"/> field rendered by Layout prorerty instead getting <see cref="NLog.LogEventInfo.FormattedMessage"/>
-        /// </summary>
-        public bool UseLayoutAsMessage { get; set; }
+		/// <summary>
+		/// Using for JSON formating (when UseJSON set true). 
+		/// If set as true - <see cref="NLog.Targets.LogLine.Message"/> field rendered by Layout prorerty instead getting <see cref="NLog.LogEventInfo.FormattedMessage"/>
+		/// </summary>
+		public bool UseLayoutAsMessage { get; set; }
 
 		#endregion
 

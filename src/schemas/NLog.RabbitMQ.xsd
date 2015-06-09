@@ -31,7 +31,7 @@
 					<element name="maxBuffer" type="integer" minOccurs="0" maxOccurs="1" />
 					<element name="heartBeatSeconds" type="unsignedShort" minOccurs="0" maxOccurs="1" />
 					<element name="useJSON" type="boolean" minOccurs="0" maxOccurs="1" />
-          <element name="useLayoutAsMessage" type="boolean" minOccurs="0" maxOccurs="1" />
+					<element name="useLayoutAsMessage" type="boolean" minOccurs="0" maxOccurs="1" />
 					<element name="compression" type="string" minOccurs="0" maxOccurs="1" />
 					<element name="layout" type="nlog:Layout" minOccurs="0" maxOccurs="1" />
 					<element name="field" minOccurs="0" maxOccurs="unbounded">
@@ -107,20 +107,20 @@
 					</annotation>
 				</attribute>
 				<attribute name="useJSON" type="boolean" default="false">
-				 <annotation>
-					 <documentation>Whether to publish the message as a JSON structure (recommended!). If true then the defined layout will not be used.</documentation>
-				 </annotation>
+					<annotation>
+						<documentation>Whether to publish the message as a JSON structure (recommended!). If true then the defined layout will not be used.</documentation>
+					</annotation>
 				</attribute>
-        <attribute name="useLayoutAsMessage" type="boolean" default="false">
-          <annotation>
-            <documentation>Using Layout for @message, when publish the message as a JSON structure. If false then the defined layout will not be used.</documentation>
-          </annotation>
-        </attribute>
+				<attribute name="useLayoutAsMessage" type="boolean" default="false">
+					<annotation>
+						<documentation>Using Layout for @message, when publish the message as a JSON structure. If false then the defined layout will not be used.</documentation>
+					</annotation>
+				</attribute>
 				<attribute name="compression" type="string" default="none">
 					<annotation>
 						<documentation>Compression type: none, gzip</documentation>
 					</annotation>
-				</attribute>				 
+				</attribute>
 			</extension>
 		</complexContent>
 	</complexType>
