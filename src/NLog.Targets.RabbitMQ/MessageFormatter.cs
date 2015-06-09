@@ -18,7 +18,12 @@ namespace NLog.Targets
 			get { return _hostName = (_hostName ?? Dns.GetHostName()); }
 		}
 
-		public static string GetMessageInner(bool useJSON, Layout layout, LogEventInfo info, IList<Field> fields)
+        public static string GetMessageInner(bool useJSON, Layout layout, LogEventInfo info, IList<Field> fields)
+        {
+            return GetMessageInner(useJSON, false, layout, info, fields);
+        }
+
+		public static string GetMessageInner(bool useJSON, bool useLayoutAsMessage, Layout layout, LogEventInfo info, IList<Field> fields)
 		{
 			if (!useJSON)
 				return layout.Render(info);
@@ -26,7 +31,7 @@ namespace NLog.Targets
 			var logLine = new LogLine
 				{
 					TimeStampISO8601 = info.TimeStamp.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture),
-					Message = info.FormattedMessage,
+					Message = useLayoutAsMessage ? layout.Render(info) : info.FormattedMessage,
 					Level = info.Level.Name,
 					Type = "amqp",
 					Source = new Uri(string.Format("nlog://{0}/{1}", HostName, info.LoggerName))
