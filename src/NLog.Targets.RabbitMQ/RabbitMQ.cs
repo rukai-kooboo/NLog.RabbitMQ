@@ -412,7 +412,7 @@ namespace NLog.Targets
 					try
 					{
 						_Connection = GetConnectionFac().CreateConnection();
-						_Connection.ConnectionShutdown += ShutdownAmqp;
+						AddConnectionShutdownDelegate(_Connection);
 
 						try
 						{
@@ -448,6 +448,27 @@ namespace NLog.Targets
 
 			if (!t.Wait(TimeSpan.FromMilliseconds(Timeout)))
 				InternalLogger.Warn("starting connection-task timed out, continuing");
+		}
+
+		/// <summary>
+		/// Hack for compatibility RabbitMQ.Client library between 3.4.x and 3.5.x versions
+		/// ConnectionShutdownEventHandler replaced by Eventhandler<ShutdownEventArgs> - https://github.com/rabbitmq/rabbitmq-dotnet-client/commit/84ca5552a338a86c9af124331adca230accf3be3
+		/// </summary>
+		private void AddConnectionShutdownDelegate(IConnection connection)
+		{
+			System.Reflection.EventInfo eventInfo = typeof(IConnection).GetEvent("ConnectionShutdown");
+			System.Reflection.MethodInfo addHandler = eventInfo.GetAddMethod();
+			Type delegateType = eventInfo.EventHandlerType;
+
+			System.Reflection.MethodInfo methodInfo = null;
+
+			if (delegateType.IsGenericType && delegateType.GetGenericTypeDefinition() == typeof(EventHandler<>))
+				methodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp35", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			else
+				methodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+			Delegate d = Delegate.CreateDelegate(delegateType, this, methodInfo);
+			addHandler.Invoke(connection, new object[] { d });
 		}
 
 		private ConnectionFactory GetConnectionFac()
@@ -492,7 +513,7 @@ namespace NLog.Targets
 			{
 				if (connection != null && connection.IsOpen)
 				{
-					connection.ConnectionShutdown -= ShutdownAmqp;
+					AddConnectionShutdownDelegate(connection);
 					connection.Close(reason.ReplyCode, reason.ReplyText, 1000);
 					connection.Abort(1000); // you get 2 seconds to shut down!
 				}
@@ -502,12 +523,15 @@ namespace NLog.Targets
 				InternalLogger.Error("could not close connection, {0}", e);
 			}
 		}
-
-        private void ShutdownAmqp(object sender, ShutdownEventArgs e)
-        {
-            ShutdownAmqp((IConnection)sender, e);
-        }
-
+		
+		/// <summary>
+		/// Handler for RabbitMQ.Client from 3.5.x version Using in reflection
+		/// </summary>
+		private void ShutdownAmqp35(object sender, ShutdownEventArgs e)
+		{
+			ShutdownAmqp((IConnection)sender, e);
+		}
+		
 		// Dispose calls CloseTarget!
 		protected override void CloseTarget()
 		{
