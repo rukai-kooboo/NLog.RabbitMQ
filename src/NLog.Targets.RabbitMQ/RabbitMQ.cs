@@ -310,7 +310,7 @@ namespace NLog.Targets
 
 			if (_Model == null || !_Model.IsOpen)
 				StartConnection();
-
+			
 			if (_Model == null || !_Model.IsOpen)
 			{
 				AddUnsent(routingKey, basicProperties, message);
@@ -337,7 +337,7 @@ namespace NLog.Targets
 			}
 
 			ShutdownAmqp(_Connection, new ShutdownEventArgs(ShutdownInitiator.Application,
-															Constants.ChannelError, "Could not talk to RabbitMQ instance"));
+															Constants.ChannelError, "Could not talk to RabbitMQ instance", null));
 		}
 
 		private void AddUnsent(string routingKey, IBasicProperties basicProperties, byte[] message)
@@ -536,7 +536,7 @@ namespace NLog.Targets
 		protected override void CloseTarget()
 		{
 			ShutdownAmqp(_Connection,
-						 new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ReplySuccess, "closing appender"));
+						 new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ReplySuccess, "closing appender", null));
 			
 			base.CloseTarget();
 		}
