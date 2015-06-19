@@ -312,7 +312,7 @@ namespace NLog.Targets
 
 			if (_Model == null || !_Model.IsOpen)
 				StartConnection();
-			
+
 			if (_Model == null || !_Model.IsOpen)
 			{
 				AddUnsent(routingKey, basicProperties, message);
