@@ -33,6 +33,8 @@ namespace NLog.Targets
 			Layout = "${message}";
 			Compression = CompressionTypes.None;
 			Fields = new List<Field>();
+
+			PrepareConnectionShutdownEventHandler();
 		}
 
 		#region Properties
@@ -450,27 +452,6 @@ namespace NLog.Targets
 				InternalLogger.Warn("starting connection-task timed out, continuing");
 		}
 
-		/// <summary>
-		/// Hack for compatibility RabbitMQ.Client library between 3.4.x and 3.5.x versions
-		/// ConnectionShutdownEventHandler replaced by Eventhandler<ShutdownEventArgs> - https://github.com/rabbitmq/rabbitmq-dotnet-client/commit/84ca5552a338a86c9af124331adca230accf3be3
-		/// </summary>
-		private void AddConnectionShutdownDelegate(IConnection connection)
-		{
-			System.Reflection.EventInfo eventInfo = typeof(IConnection).GetEvent("ConnectionShutdown");
-			System.Reflection.MethodInfo addHandler = eventInfo.GetAddMethod();
-			Type delegateType = eventInfo.EventHandlerType;
-
-			System.Reflection.MethodInfo methodInfo = null;
-
-			if (delegateType.IsGenericType && delegateType.GetGenericTypeDefinition() == typeof(EventHandler<>))
-				methodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp35", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-			else
-				methodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-			Delegate d = Delegate.CreateDelegate(delegateType, this, methodInfo);
-			addHandler.Invoke(connection, new object[] { d });
-		}
-
 		private ConnectionFactory GetConnectionFac()
 		{
 			return new ConnectionFactory
@@ -490,6 +471,8 @@ namespace NLog.Targets
 				}
 			};
 		}
+
+		#region ConnectionShutdownEventHandler
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		private void ShutdownAmqp(IConnection connection, ShutdownEventArgs reason)
@@ -523,14 +506,48 @@ namespace NLog.Targets
 				InternalLogger.Error("could not close connection, {0}", e);
 			}
 		}
-		
+
 		/// <summary>
-		/// Handler for RabbitMQ.Client from 3.5.x version Using in reflection
+		/// EventHandler<ShutdownEventArgs> for RabbitMQ.Client from 3.5.x version
 		/// </summary>
 		private void ShutdownAmqp35(object sender, ShutdownEventArgs e)
 		{
 			ShutdownAmqp((IConnection)sender, e);
 		}
+
+		private System.Reflection.MethodInfo _connectionShutdownEventAddMethod;
+		private Delegate _connectionShutdownEventHandler;
+
+		/// <summary>
+		/// Hack for compatibility RabbitMQ.Client library between 3.4.x and 3.5.x versions
+		/// ConnectionShutdownEventHandler replaced by Eventhandler<ShutdownEventArgs> - https://github.com/rabbitmq/rabbitmq-dotnet-client/commit/84ca5552a338a86c9af124331adca230accf3be3
+		/// using reflection for understand, what type of delegate we must use for IConnection.ConnectionShutdown:
+		/// - EventHandler<ShutdownEventArgs> for 3.5.x version
+		/// - ConnectionShutdownEventHandler for 3.4.x and early version
+		/// </summary>
+		private void PrepareConnectionShutdownEventHandler()
+		{
+			System.Reflection.EventInfo connectionShutdownEventInfo = typeof(IConnection).GetEvent("ConnectionShutdown");
+			_connectionShutdownEventAddMethod = connectionShutdownEventInfo.GetAddMethod();
+
+			Type delegateType = connectionShutdownEventInfo.EventHandlerType;
+
+			System.Reflection.MethodInfo shutdownAmqpMethodInfo = null;
+
+			if (delegateType.IsGenericType && delegateType.GetGenericTypeDefinition() == typeof(EventHandler<>))
+				shutdownAmqpMethodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp35", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			else
+				shutdownAmqpMethodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+			_connectionShutdownEventHandler = Delegate.CreateDelegate(delegateType, this, shutdownAmqpMethodInfo);
+		}
+
+		private void AddConnectionShutdownDelegate(IConnection connection)
+		{
+			_connectionShutdownEventAddMethod.Invoke(connection, new object[] { _connectionShutdownEventHandler });
+		}
+
+		#endregion
 		
 		// Dispose calls CloseTarget!
 		protected override void CloseTarget()
