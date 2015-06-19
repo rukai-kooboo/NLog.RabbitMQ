@@ -338,8 +338,9 @@ namespace NLog.Targets
 				//InternalLogger.Error("Could not write data to the network stream! {0}", e.ToString());
 			}
 
-			ShutdownAmqp(_Connection, new ShutdownEventArgs(ShutdownInitiator.Application,
-															Constants.ChannelError, "Could not talk to RabbitMQ instance", null));
+			ShutdownAmqp(_Connection, 
+				new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ChannelError, "Could not talk to RabbitMQ instance", null));
+				// using this version of constructor, because RabbitMQ.Client from 3.5.x don't have ctor without cause parameter
 		}
 
 		private void AddUnsent(string routingKey, IBasicProperties basicProperties, byte[] message)
@@ -554,6 +555,7 @@ namespace NLog.Targets
 		{
 			ShutdownAmqp(_Connection,
 						 new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ReplySuccess, "closing appender", null));
+						// using this version of constructor, because RabbitMQ.Client from 3.5.x don't have ctor without cause parameter
 			
 			base.CloseTarget();
 		}
