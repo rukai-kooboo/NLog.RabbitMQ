@@ -33,6 +33,8 @@ namespace NLog.Targets
 			Layout = "${message}";
 			Compression = CompressionTypes.None;
 			Fields = new List<Field>();
+
+			PrepareConnectionShutdownEventHandler();
 		}
 
 		#region Properties
@@ -336,8 +338,9 @@ namespace NLog.Targets
 				//InternalLogger.Error("Could not write data to the network stream! {0}", e.ToString());
 			}
 
-			ShutdownAmqp(_Connection, new ShutdownEventArgs(ShutdownInitiator.Application,
-															Constants.ChannelError, "Could not talk to RabbitMQ instance"));
+			ShutdownAmqp(_Connection, 
+				new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ChannelError, "Could not talk to RabbitMQ instance", null));
+				// using this version of constructor, because RabbitMQ.Client from 3.5.x don't have ctor without cause parameter
 		}
 
 		private void AddUnsent(string routingKey, IBasicProperties basicProperties, byte[] message)
@@ -412,7 +415,7 @@ namespace NLog.Targets
 					try
 					{
 						_Connection = GetConnectionFac().CreateConnection();
-						_Connection.ConnectionShutdown += ShutdownAmqp;
+						AddConnectionShutdownDelegate(_Connection);
 
 						try
 						{
@@ -470,6 +473,8 @@ namespace NLog.Targets
 			};
 		}
 
+		#region ConnectionShutdownEventHandler
+
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		private void ShutdownAmqp(IConnection connection, ShutdownEventArgs reason)
 		{
@@ -492,7 +497,7 @@ namespace NLog.Targets
 			{
 				if (connection != null && connection.IsOpen)
 				{
-					connection.ConnectionShutdown -= ShutdownAmqp;
+					AddConnectionShutdownDelegate(connection);
 					connection.Close(reason.ReplyCode, reason.ReplyText, 1000);
 					connection.Abort(1000); // you get 2 seconds to shut down!
 				}
@@ -503,16 +508,54 @@ namespace NLog.Targets
 			}
 		}
 
-        private void ShutdownAmqp(object sender, ShutdownEventArgs e)
-        {
-            ShutdownAmqp((IConnection)sender, e);
-        }
+		/// <summary>
+		/// EventHandler<ShutdownEventArgs> for RabbitMQ.Client from 3.5.x version
+		/// </summary>
+		private void ShutdownAmqp35(object sender, ShutdownEventArgs e)
+		{
+			ShutdownAmqp((IConnection)sender, e);
+		}
 
+		private System.Reflection.MethodInfo _connectionShutdownEventAddMethod;
+		private Delegate _connectionShutdownEventHandler;
+
+		/// <summary>
+		/// Hack for compatibility RabbitMQ.Client library between 3.4.x and 3.5.x versions
+		/// ConnectionShutdownEventHandler replaced by Eventhandler<ShutdownEventArgs> - https://github.com/rabbitmq/rabbitmq-dotnet-client/commit/84ca5552a338a86c9af124331adca230accf3be3
+		/// using reflection for understand, what type of delegate we must use for IConnection.ConnectionShutdown:
+		/// - EventHandler<ShutdownEventArgs> for 3.5.x version
+		/// - ConnectionShutdownEventHandler for 3.4.x and early version
+		/// </summary>
+		private void PrepareConnectionShutdownEventHandler()
+		{
+			System.Reflection.EventInfo connectionShutdownEventInfo = typeof(IConnection).GetEvent("ConnectionShutdown");
+			_connectionShutdownEventAddMethod = connectionShutdownEventInfo.GetAddMethod();
+
+			Type delegateType = connectionShutdownEventInfo.EventHandlerType;
+
+			System.Reflection.MethodInfo shutdownAmqpMethodInfo = null;
+
+			if (delegateType.IsGenericType && delegateType.GetGenericTypeDefinition() == typeof(EventHandler<>))
+				shutdownAmqpMethodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp35", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			else
+				shutdownAmqpMethodInfo = typeof(RabbitMQ).GetMethod("ShutdownAmqp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+			_connectionShutdownEventHandler = Delegate.CreateDelegate(delegateType, this, shutdownAmqpMethodInfo);
+		}
+
+		private void AddConnectionShutdownDelegate(IConnection connection)
+		{
+			_connectionShutdownEventAddMethod.Invoke(connection, new object[] { _connectionShutdownEventHandler });
+		}
+
+		#endregion
+		
 		// Dispose calls CloseTarget!
 		protected override void CloseTarget()
 		{
 			ShutdownAmqp(_Connection,
-						 new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ReplySuccess, "closing appender"));
+						 new ShutdownEventArgs(ShutdownInitiator.Application, Constants.ReplySuccess, "closing appender", null));
+						// using this version of constructor, because RabbitMQ.Client from 3.5.x don't have ctor without cause parameter
 			
 			base.CloseTarget();
 		}
