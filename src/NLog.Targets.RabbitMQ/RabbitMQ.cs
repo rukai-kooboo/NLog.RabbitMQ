@@ -178,7 +178,16 @@ namespace NLog.Targets
 			get { return _Durable; }
 			set { _Durable = value; }
 		}
-
+		
+		/// <summary>
+		/// 	Gets or sets the setting specifying whether the exchange
+		///     should be declared or used passively.
+		/// </summary>
+		/// <remarks>
+		/// 	Default is false
+		/// </remarks>
+		public bool Passive { get; set; }
+        
 		/// <summary>
 		/// 	Gets or sets the application id to specify when sending. Defaults to null,
 		/// 	and then IBasicProperties.AppId will be the name of the logger instead.
@@ -426,7 +435,7 @@ namespace NLog.Targets
 							InternalLogger.Error("could not create model, {0}", e);
 						}
 
-						if (_Model != null)
+						if (_Model != null && !Passive)
 						{
 							try
 							{
