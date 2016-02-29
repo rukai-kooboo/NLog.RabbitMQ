@@ -3,5 +3,5 @@ source https://www.nuget.org/api/v2/
 nuget Newtonsoft.Json
 nuget NLog 3.1.0.0
 nuget NUnit 2.6.0.12054
-nuget RabbitMQ.Client 3.5.1
+nuget RabbitMQ.Client 3.6.0
 nuget NuGet.CommandLine

@@ -375,7 +375,7 @@ namespace NLog.Targets
 		{
 			_Model.BasicPublish(_Exchange,
 								routingKey,
-								true, false, basicProperties,
+								true, basicProperties,
 								bytes);
 		}
 
