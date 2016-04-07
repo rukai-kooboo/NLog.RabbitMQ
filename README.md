@@ -10,6 +10,9 @@ You will find the listener tool in the nuget `tools` folder.
 [Logary](https://github.com/logary/logary) which encapsulates many of the
 lessons building this taught me and also has support for many more targets**
 
+Sponsored by
+[qvitoo – A.I. bookkeeping](https://qvitoo.com/?utm_source=github&utm_campaign=repos).
+
 ##Configuration:
 
 ```xml
