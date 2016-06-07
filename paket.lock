@@ -1,8 +1,8 @@
 NUGET
   remote: https://www.nuget.org/api/v2
   specs:
-    Newtonsoft.Json (6.0.6)
-    NLog (3.1.0.0)
-    NuGet.CommandLine (2.8.3)
+    Newtonsoft.Json (8.0.3)
+    NLog (3.1)
+    NuGet.CommandLine (3.4.3)
     NUnit (2.6.0.12054)
-    RabbitMQ.Client (3.6.0)
+    RabbitMQ.Client (3.6.2)
