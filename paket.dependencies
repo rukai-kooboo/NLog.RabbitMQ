@@ -4,4 +4,4 @@ nuget Newtonsoft.Json
 nuget NLog 3.1.0.0
 nuget NUnit 2.6.0.12054
 nuget RabbitMQ.Client
-nuget NuGet.CommandLine
+nuget NuGet.CommandLine ~> 3
