@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>NLog.RabbitMQCore</id>
+    <version>1.0.1</version>
+    <title>NLog.RabbitMQCore</title>
+    <authors>Rukai, henrik feldt</authors>
+    <owners>Rukai</owners>
+    <licenseUrl></licenseUrl>
+    <projectUrl></projectUrl>
+    <iconUrl></iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This is a lib for NLog.RabbitMq for .net core! It is rebuilt from NLog.RabbitMQ! Thanks!</description>
+    <releaseNotes>Initial realease for .net core 1.6</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>NLog RabbitMq netCore TargetRabbitMq .netCore</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard1.6">
+        <dependency id="NETStandard.Library" version="[1.6.0, )" />
+        <dependency id="Newtonsoft.Json" version="[9.0.1, )" />
+        <dependency id="NLog" version="[5.0.0-beta01, )" />
+        <dependency id="RabbitMQ.Client" version="[4.1.1, )" />
+        <dependency id="System.Reflection" version="[4.3.0-preview1-24530-04, )" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
