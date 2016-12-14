@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "1.0.2-*",
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
@@ -10,10 +10,10 @@
   },
   "packOptions": {
     "owners": [ "Rukai" ],
-    "tags": [ "NLog", "RabbitMq", "netCore", "TargetRabbitMq", ".netCore" ],
+    "tags": [ "NLog", "RabbitMq", "Target Rabbit Mq", ".net core" ],
     "requireLicenseAcceptance": false,
     "summary": "This is a lib for NLog.RabbitMq for .net core! It is rebuilt from NLog.RabbitMQ! Thanks!",
-    "releaseNotes": "Initial realease for .net core 1.6"
+    "releaseNotes": "Add support for .net 4.6.2"
   },
   "frameworks": {
     "net462": {},
