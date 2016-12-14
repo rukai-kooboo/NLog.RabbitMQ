@@ -16,6 +16,7 @@
     "releaseNotes": "Initial realease for .net core 1.6"
   },
   "frameworks": {
+    "net462": {},
     "netstandard1.6": {
       "imports": "dnxcore50"
     }
